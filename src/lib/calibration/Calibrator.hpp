@@ -3,6 +3,13 @@
 #include <string>
 #include <condition_variable>
 
+#if CV_MAJOR_VERSION >= 3
+namespace cv
+{
+    using std::vector;
+}
+#endif
+
 namespace SLS {
 
 const int WINDOW_WIDTH = 1024;

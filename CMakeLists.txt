@@ -110,3 +110,4 @@ set_target_properties ( SLS
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
     )
 
+install(TARGETS SLS generateGraycode calibrateCamera core)
