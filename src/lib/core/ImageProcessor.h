@@ -134,7 +134,7 @@ public:
     virtual const cv::Mat &getColorFrame() const { return litImage_; }
     glm::vec3 getColor(size_t x, size_t y) const
     {
-        auto color = litImage_.at<cv::Vec3b>(y, x);
+        auto color = litImage_.at<cv::Vec3b>(static_cast<int>(y), static_cast<int>(x));
         // OpenCV BGR
         float b = (float)color.val[0];
         float g = (float)color.val[1];

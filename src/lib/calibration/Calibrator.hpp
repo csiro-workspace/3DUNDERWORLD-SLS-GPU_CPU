@@ -32,9 +32,9 @@ class Calibrator {
                                       const std::string &windowName)
     {
         cv::Mat textImg;
-        cv::cvtColor(img, textImg, CV_GRAY2RGB);
-        cv::putText(textImg, text, cvPoint(20, 70), cv::FONT_HERSHEY_SIMPLEX,
-                    3.0, cvScalar(0, 0, 255), 2, CV_AA);
+        cv::cvtColor(img, textImg, cv::COLOR_GRAY2RGB);
+        cv::putText(textImg, text, cv::Point(20, 70), cv::FONT_HERSHEY_SIMPLEX,
+                    3.0, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
         cv::imshow(windowName, textImg);
         textImg.release();
     }
