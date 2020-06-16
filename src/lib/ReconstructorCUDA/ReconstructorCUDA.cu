@@ -12,9 +12,14 @@ ReconstructorCUDA :: ReconstructorCUDA(const size_t projX, const size_t projY):
 ReconstructorCUDA::~ReconstructorCUDA(){
     delete projector_;
 }
-void ReconstructorCUDA::addCamera(Camera *cam)
+void ReconstructorCUDA::addCamera(ImageFileProcessor* cam)
 {
     cameras_.push_back(cam);
+}
+
+PointCloud ReconstructorCUDA::reconstruct(const std::vector<Buckets>&)
+{
+    return reconstruct();
 }
 PointCloud ReconstructorCUDA::reconstruct()
 {

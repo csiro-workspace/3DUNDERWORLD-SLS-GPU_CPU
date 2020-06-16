@@ -65,7 +65,7 @@ void FileReaderCUDA::computeShadowsAndThresholds()
 }
 
 void FileReaderCUDA::loadConfig(const std::string& configFile){
-    FileReader::loadConfig(configFile);
+    ImageFileProcessor::loadConfig(configFile);
     // Copy config file to GPU
     float tmpVal[9];
 

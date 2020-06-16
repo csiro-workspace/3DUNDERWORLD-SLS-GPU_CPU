@@ -1,10 +1,10 @@
 #pragma once
-#include <core/FileReader.h>
+#include <core/ImageFileProcessor.h>
 #include "DynamicBits.cuh"
 #include <string>
 namespace SLS
 {
-class FileReaderCUDA: public FileReader
+class FileReaderCUDA: public ImageFileProcessor
 {
 protected:
     Dynamic_Bitset_Array *maskGPU_; // Sorry can't init before reading the images
@@ -17,7 +17,7 @@ protected:
 public:
     FileReaderCUDA()=delete; 
     FileReaderCUDA(const std::string& cName): 
-        FileReader(cName), maskGPU_(nullptr){
+        ImageFileProcessor(cName), maskGPU_(nullptr){
             gpuErrchk( cudaMalloc((void**)&params_d_[CAMERA_MAT], sizeof(float)*9));
             gpuErrchk( cudaMalloc((void**)&params_d_[DISTOR_MAT], sizeof(float)*5));
             gpuErrchk( cudaMalloc((void**)&params_d_[ROT_MAT], sizeof(float)*9));

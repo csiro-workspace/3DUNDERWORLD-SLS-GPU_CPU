@@ -3,7 +3,7 @@ add_executable(SLS App.cpp)
 target_link_libraries( SLS core)
 
 IF(${USE_CUDA})
-    cuda_add_executable(SLS_GPU ./App_CUDA.cu)
+    add_executable(SLS_GPU ./App_CUDA.cu)
     target_link_libraries(SLS_GPU core sls_gpu)
     set_target_properties ( SLS_GPU
         PROPERTIES

@@ -4,17 +4,22 @@
 #include "DynamicBits.cuh"
 #include <vector>
 #include <core/PointCloud.hpp>
+#include <core/ImageFileProcessor.h>
 
 namespace SLS
 {
 class ReconstructorCUDA: public Reconstructor
 {
 private:
+    std::vector<ImageFileProcessor*> cameras_;
+    Projector* projector_;
+
 public:
      ReconstructorCUDA(const size_t projX, const size_t projY);
     ~ReconstructorCUDA() override;
-    void addCamera(Camera *cam) override;
-    PointCloud reconstruct() override;
+    void addCamera(ImageFileProcessor* cam);
+    PointCloud reconstruct(const std::vector<Buckets>&) override; // buckets param not used in GPU version
+    PointCloud reconstruct();
 };
 
 struct GPUBucketsObj
@@ -48,10 +53,10 @@ public:
     GPUBuckets(size_t numBkt, size_t numPerBkt):
         MAX_CNT_PER_BKT_(numPerBkt), NUM_BKTS_(numBkt)
     {
-        gpuErrchk (cudaMalloc( (void**)&data_, sizeof(uint)*MAX_CNT_PER_BKT_*NUM_BKTS_));
-        gpuErrchk (cudaMemset( data_, 0, sizeof(uint)*MAX_CNT_PER_BKT_*NUM_BKTS_));
-        gpuErrchk (cudaMalloc( (void**)&count_, sizeof(uint)*NUM_BKTS_));
-        gpuErrchk (cudaMemset( count_, 0, sizeof(uint)*NUM_BKTS_));
+        gpuErrchk (cudaMalloc( (void**)&data_, sizeof(unsigned int)*MAX_CNT_PER_BKT_*NUM_BKTS_));
+        gpuErrchk (cudaMemset( data_, 0, sizeof(unsigned int)*MAX_CNT_PER_BKT_*NUM_BKTS_));
+        gpuErrchk (cudaMalloc( (void**)&count_, sizeof(unsigned int)*NUM_BKTS_));
+        gpuErrchk (cudaMemset( count_, 0, sizeof(unsigned int)*NUM_BKTS_));
 
     }
     GPUBucketsObj getGPUOBJ() 

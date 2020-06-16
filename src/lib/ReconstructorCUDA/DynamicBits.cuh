@@ -82,7 +82,7 @@ struct Dynamic_Bitset_Array_GPU
 
     __device__ unsigned int to_uint(const size_t &elem) const
     {
-        if (bitsPerElem > sizeof(uint)*BITS_PER_BYTE)   // Break if longer than uint
+        if (bitsPerElem > sizeof(unsigned int)*BITS_PER_BYTE)   // Break if longer than uint
         {
             __threadfence();
             asm("trap;");

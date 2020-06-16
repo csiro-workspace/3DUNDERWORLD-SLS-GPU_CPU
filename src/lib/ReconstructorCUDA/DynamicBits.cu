@@ -9,9 +9,9 @@ bool Dynamic_Bitset_Array::writeElemToPGM( std::string fileName, size_t elemIdx,
     const size_t numBytes = (bitsPerElem)/BITS_PER_BYTE;
     std::cout<< numBytes <<"\t"<< bitsPerElem<<std::endl;
     unsigned char *startBit = &bits[numBytes*elemIdx];
-    unsigned char bits_h[numBytes];
-    gpuErrchk(cudaMemcpy(bits_h, startBit, numBytes, cudaMemcpyDeviceToHost));
-    Dynamic_Bitset bitset_h(numBytes, bits_h);
+    std::vector<unsigned char> bits_h(numBytes, 0);
+    gpuErrchk(cudaMemcpy(&bits_h[0], startBit, numBytes, cudaMemcpyDeviceToHost));
+    Dynamic_Bitset bitset_h(numBytes, &bits_h[0]);
     bitset_h.writeToPGM(fileName, w, h, transpose);
     return true;
 }
@@ -28,13 +28,13 @@ bool Dynamic_Bitset_Array::writeToPGM( std::string fileName, size_t w, size_t h,
         maxValue = (long unsigned int)(1<<(bitsPerElem+1))-1;
     unsigned int *uintArray_d = nullptr;
     unsigned int *uintArray_h = nullptr;
-    gpuErrchk (cudaMalloc ((void**)&uintArray_d,  sizeof(uint)*numElem));
+    gpuErrchk (cudaMalloc ((void**)&uintArray_d,  sizeof(unsigned int)*numElem));
 
     Kernel::toNormalizedUintArray<<<200,200>>>( getGPUOBJ(), 255, maxValue, uintArray_d);
 
     gpuErrchk (cudaPeekAtLastError());
     uintArray_h = new unsigned int[numElem];
-    gpuErrchk ( cudaMemcpy ( uintArray_h, uintArray_d, sizeof(uint)*numElem, cudaMemcpyDeviceToHost));
+    gpuErrchk ( cudaMemcpy ( uintArray_h, uintArray_d, sizeof(unsigned int)*numElem, cudaMemcpyDeviceToHost));
     gpuErrchk (cudaFree (uintArray_d));
 
 
@@ -69,13 +69,13 @@ bool Dynamic_Bitset_Array::writeToPPM( std::string fileName, size_t w, size_t h,
         maxValue = (long unsigned int)(1<<(bitsPerElem+1))-1;
     unsigned int *uintArray_d = nullptr;
     unsigned int *uintArray_h = nullptr;
-    gpuErrchk (cudaMalloc ((void**)&uintArray_d,  sizeof(uint)*numElem));
+    gpuErrchk (cudaMalloc ((void**)&uintArray_d,  sizeof(unsigned int)*numElem));
 
     Kernel::toNormalizedUintArray<<<200,200>>>( getGPUOBJ(), (1<<3*8)-1, maxValue, uintArray_d);
 
     gpuErrchk (cudaPeekAtLastError());
     uintArray_h = new unsigned int[numElem];
-    gpuErrchk ( cudaMemcpy ( uintArray_h, uintArray_d, sizeof(uint)*numElem, cudaMemcpyDeviceToHost));
+    gpuErrchk ( cudaMemcpy ( uintArray_h, uintArray_d, sizeof(unsigned int)*numElem, cudaMemcpyDeviceToHost));
     gpuErrchk (cudaFree (uintArray_d));
 
 
@@ -111,8 +111,8 @@ __global__ void toUintArray_kernel(
         unsigned int *uintArray
         )
 {
-    uint idx = blockIdx.x*blockDim.x + threadIdx.x;
-    uint stride = blockDim.x * gridDim.x;
+    unsigned int idx = blockIdx.x*blockDim.x + threadIdx.x;
+    unsigned int stride = blockDim.x * gridDim.x;
     while (idx < bitsArray.numElem)
     {
         uintArray[idx] = bitsArray.to_uint(idx);
@@ -126,15 +126,15 @@ __global__ void toNormalizedUintArray(
         unsigned int *uintArray
         )
 {
-    uint idx = blockIdx.x*blockDim.x + threadIdx.x;
-    uint stride = blockDim.x * gridDim.x;
+    unsigned int idx = blockIdx.x*blockDim.x + threadIdx.x;
+    unsigned int stride = blockDim.x * gridDim.x;
     while (idx < bitsArray.numElem)
     {
         //auto val2 = bitsArray.to_uint_gray(idx);
         //uint val = val2.x + val2.y*1024;
-        uint val = bitsArray.to_uint(idx);
+        unsigned int val = bitsArray.to_uint(idx);
 
-        uintArray[idx] = (uint)((long unsigned int)val * (long unsigned int)capValue / maxValue);
+        uintArray[idx] = (unsigned int)((long unsigned int)val * (long unsigned int)capValue / maxValue);
         idx += stride;
     }
 }
